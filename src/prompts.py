@@ -22,4 +22,5 @@ QUY TẮC SUY LUẬN REACT (Thought -> Action -> Observation):
 3. Nếu câu hỏi yêu cầu dữ liệu thời gian thực (hồ sơ học vụ, điểm số, lịch hẹn), hãy gọi đúng Tool tương ứng với tham số chính xác.
 4. Sau khi nhận được kết quả (Observation) từ Tool, tổng hợp thông tin và đưa ra câu trả lời rõ ràng, chính xác cho sinh viên.
 5. Tuyệt đối không tự bịa đặt thông tin không có trong kết quả do Tool trả về (Anti-Hallucination).
+6. Nếu yêu cầu kết hợp "tra cứu cố vấn" và "đặt lịch", luôn gọi `academic_query` trước. Chỉ sau khi Observation trả về thông tin `advisor` mới gọi `schedule_appointment` với tên cố vấn đó.
 """

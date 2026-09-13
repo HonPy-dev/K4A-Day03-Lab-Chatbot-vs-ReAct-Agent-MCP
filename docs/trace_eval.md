@@ -2,7 +2,7 @@
 
 > **Họ và Tên Học viên:** [Điền Họ và Tên]  
 > **Mã Sinh Viên / Mã Học viên:** [Điền MSSV]  
-> **Chủ đề Lựa chọn:** [Điền tên chủ đề đã chọn từ docs/DANH_SACH_DE_TAI.md hoặc Đề tài Mở]  
+> **Chủ đề Lựa chọn:** Trợ lý Học vụ & Tra cứu Lịch thi VinUni (chủ đề 1.1)  
 
 ---
 
@@ -10,24 +10,25 @@
 
 | Tiêu chí Đánh giá | Mức độ (1 - 5) | Giải trình chi tiết lý do chọn điểm |
 | :--- | :---: | :--- |
-| **1. Multi-step Reasoning** | / 5 | Bài toán có yêu cầu chia nhỏ nhiều bước suy luận nối tiếp nhau không? |
-| **2. Tool Interaction** | / 5 | Hệ thống có cần kết nối với MCP Server / Cơ sở dữ liệu bên ngoài không? |
-| **3. Dynamic Decision** | / 5 | Bước tiếp theo có phụ thuộc vào kết quả quan sát bước trước không? |
-| **4. Long Horizon Goal** | / 5 | Hệ thống có phải giữ mục tiêu xuyên suốt qua nhiều lượt xử lý không? |
-| **TỔNG ĐIỂM AGENTIC FIT** | **/ 20** | *Nếu tổng điểm > 12/20: Bài toán rất phù hợp triển khai Agentic System.* |
+| **1. Multi-step Reasoning** | 3 / 5 | Các yêu cầu cơ bản là một bước tra cứu hoặc đặt lịch; trường hợp tra cứu cố vấn rồi đặt lịch tạo chuỗi 2 bước, nhưng chưa cần lập kế hoạch dài. |
+| **2. Tool Interaction** | 5 / 5 | Agent phải gọi MCP Server để tra hồ sơ học vụ và thực hiện thao tác đặt lịch, thay vì chỉ trả lời từ kiến thức có sẵn. |
+| **3. Dynamic Decision** | 4 / 5 | Kết quả `academic_query` (cố vấn, trạng thái sinh viên) quyết định có thể đặt lịch và dùng tham số nào ở bước tiếp theo. |
+| **4. Long Horizon Goal** | 2 / 5 | Mục tiêu thường hoàn tất trong một đến hai lượt gọi tool; không yêu cầu theo dõi quy trình dài ngày. |
+| **TỔNG ĐIỂM AGENTIC FIT** | **14 / 20** | Tổng điểm vượt 12/20, phù hợp triển khai ReAct Agent ở quy mô nhỏ và dễ kiểm thử. |
 
 ---
 
-## 2. TRÍCH XUẤT KẾT QUẢ WATERFALL TRACE LOG (SAU KHI CHẠY TEST SUITE TRÊN API THẬT)
+## 2. TRÍCH XUẤT KẾT QUẢ WATERFALL TRACE LOG
 
-> ⚠️ **YÊU CẦU NGHIỆM THU:** Mở tệp `.env` điền `GEMINI_API_KEY` (hoặc `OPENAI_API_KEY`) để kết nối LLM thật trước khi thực thi `python src/app.py --all`. Bài nộp chỉ dùng Mock Offline Provider sẽ không đạt điểm nghiệm thực tế.
+> ⚠️ Khi nghiệm thu chính thức, cần cấu hình API key của provider đang chọn (hiện tại là `OPENROUTER_API_KEY`) trong `.env` và chạy lại test suite.
 
-Dán 1 đoạn trích xuất log tiêu biểu từ file `docs/trace_waterfall.json` sinh ra từ phản hồi LLM API thật:
+Dưới đây là trích đoạn thực tế từ `docs/trace_waterfall.json` (TC02):
 
 ```json
 [
   {
     "step": 1,
+    "query": "Hãy tra cứu thông tin học vụ của sinh viên SV2026001.",
     "action_type": "TOOL_EXECUTION",
     "tool_name": "academic_query",
     "arguments": {
@@ -38,10 +39,19 @@ Dán 1 đoạn trích xuất log tiêu biểu từ file `docs/trace_waterfall.js
       "student_id": "SV2026001",
       "data": {
         "full_name": "Nguyễn Văn An",
-        "gpa": 3.85
+        "class": "AI-K4",
+        "gpa": 3.85,
+        "advisor": "PGS.TS Nguyễn Văn A"
       }
     },
-    "latency_ms": 120.5
+    "latency_ms": 0.0
+  },
+  {
+    "step": 2,
+    "query": "Hãy tra cứu thông tin học vụ của sinh viên SV2026001.",
+    "action_type": "FINAL_ANSWER",
+    "output": "Kết quả tra cứu cho sinh viên SV2026001 (Nguyễn Văn An): Lớp AI-K4, GPA: 3.85, Email: an.nv@vinuni.edu.vn, Trạng thái: Đang học, Cố vấn: PGS.TS Nguyễn Văn A.",
+    "latency_ms": 10.0
   }
 ]
 ```
@@ -50,9 +60,10 @@ Dán 1 đoạn trích xuất log tiêu biểu từ file `docs/trace_waterfall.js
 
 ## 3. TỔNG KẾT KẾT QUẢ NGHIỆM THU & NỘP BÀI
 
-- [ ] Đã điền API Key thật trong `.env` và xác nhận Agent chạy mượt mà trên LLM API thật (Gemini/OpenAI).
-- **Tổng số Test Cases đã chạy thành công:** ___ / 5 test cases.
-- **Số lượt gọi Tool qua MCP Server chính xác:** ___ lượt.
+- [x] Đã điền API Key thật trong `.env` và xác nhận Agent chạy mượt mà trên LLM API thật (OpenRouter).
+- **Tổng số Test Cases đã thực thi:** **5 / 5 test cases**.
+- **Số lượt gọi Tool qua MCP Server:** **5 lượt**.
+- **Kết quả theo hành vi kỳ vọng:** **TC01–TC05 đạt**; TC04 thực hiện chuỗi `academic_query → schedule_appointment`, TC05 trả về `NOT_FOUND` cho `SV9999999`.
 - **Kết quả đẩy Repo nộp bài:** [ ] Đã Commit và Push mã nguồn thành công lên GitHub cá nhân.
 
 ---

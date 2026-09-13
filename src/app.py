@@ -71,6 +71,8 @@ def run_react_agent(user_query: str, provider, mcp_server: MCPAcademicServer) ->
     step = 0
     trace_logs = []
     tools_list = mcp_server.list_tools()
+    conversation_prompt = user_query
+    previous_tool_signature = None
     
     while step < MAX_ITERATIONS:
         step += 1
@@ -78,7 +80,7 @@ def run_react_agent(user_query: str, provider, mcp_server: MCPAcademicServer) ->
         print(f"\n--- 🔄 Vòng lặp ReAct Loop (Step {step}/{MAX_ITERATIONS}) ---")
         
         # Gọi LLM với Native Tool Calling Specs
-        llm_response = provider.generate_with_tools(user_query, tools_list, system_prompt=REACT_AGENT_SYSTEM_PROMPT)
+        llm_response = provider.generate_with_tools(conversation_prompt, tools_list, system_prompt=REACT_AGENT_SYSTEM_PROMPT)
         latency_ms = round((time.time() - step_start_time) * 1000, 2)
         
         thought = llm_response.get("thought", "Đang suy luận...")
@@ -145,19 +147,35 @@ def run_react_agent(user_query: str, provider, mcp_server: MCPAcademicServer) ->
                 "latency_ms": latency_ms
             })
             
-            # Kết thúc vòng lặp sau khi hoàn tất Observation và xuất Final Answer
+            # Nạp Observation vào ngữ cảnh cho lượt suy luận kế tiếp.
+            # Nếu model lặp lại đúng tool/arguments, dùng kết quả hiện tại để
+            # tổng hợp câu trả lời và kết thúc, tránh vòng lặp vô hạn.
+            tool_signature = json.dumps({"tool": tool_name, "arguments": arguments}, sort_keys=True, ensure_ascii=False)
+            repeated_tool_call = tool_signature == previous_tool_signature
+            previous_tool_signature = tool_signature
+            conversation_prompt = (
+                f"{user_query}\n\n"
+                f"OBSERVATION từ MCP Server (bước {step}): "
+                f"{json.dumps(obs_data, ensure_ascii=False)}\n\n"
+                "Dựa trên Observation này, hãy quyết định bước tiếp theo. "
+                "Nếu mục tiêu đã hoàn tất, trả lời bằng văn bản ngắn gọn; "
+                "nếu còn bước cần làm, hãy gọi tool phù hợp."
+            )
+
             print(f"🧠 [Thought]: Đã nhận được dữ liệu từ MCP Server. Tổng hợp kết quả phản hồi.")
-            print(f"🏁 [Final Answer]: {final_answer}")
-            
-            trace_logs.append({
-                "step": step + 1,
-                "query": user_query,
-                "action_type": "FINAL_ANSWER",
-                "thought": "Tổng hợp kết quả từ MCP Server thành công.",
-                "output": final_answer,
-                "latency_ms": 10.0
-            })
-            break
+            if repeated_tool_call or step >= MAX_ITERATIONS:
+                print(f"🏁 [Final Answer]: {final_answer}")
+                trace_logs.append({
+                    "step": step + 1,
+                    "query": user_query,
+                    "action_type": "FINAL_ANSWER",
+                    "thought": "Tổng hợp kết quả từ MCP Server thành công.",
+                    "output": final_answer,
+                    "latency_ms": 10.0
+                })
+                break
+
+            print("🔄 [ReAct]: Đã nạp Observation, tiếp tục lượt suy luận kế tiếp.")
 
     return trace_logs
 

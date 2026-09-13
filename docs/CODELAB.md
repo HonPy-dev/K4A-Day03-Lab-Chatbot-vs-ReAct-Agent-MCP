@@ -200,7 +200,7 @@ graph TD
 Quan sát là yếu tố sống còn trong quản trị Agentic Systems. Bài Lab tự động trích xuất file log `docs/trace_waterfall.json` thể hiện độ trễ (latency_ms) và cây thực thi từng bước.
 
 ### Thao tác thực hành:
-1. **Cấu hình API Key thật:** Mở tệp `.env` và điền `GEMINI_API_KEY` (hoặc `OPENAI_API_KEY`) của bạn để chuyển Agent từ chế độ `MockOfflineProvider` sang kết nối với LLM thật. *(⚠️ Bài nộp bắt buộc phải kết nối LLM API thật để tính điểm nghiệm thực tế).*
+1. **Cấu hình API Key thật:** Mở tệp `.env` và điền API key của provider đã chọn (`OPENROUTER_API_KEY`, `GEMINI_API_KEY` hoặc `OPENAI_API_KEY`) để chuyển Agent từ chế độ `MockOfflineProvider` sang kết nối với LLM thật. *(⚠️ Bài nộp bắt buộc phải kết nối LLM API thật để tính điểm nghiệm thực tế).*
 2. Mở terminal và thực thi bài lab qua các chế độ kiểm thử linh hoạt:
    - **Chạy toàn bộ 5 Test Cases nghiệm thu:**
      ```bash
