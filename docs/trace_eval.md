@@ -10,11 +10,11 @@
 
 | Tiêu chí Đánh giá | Mức độ (1 - 5) | Giải trình chi tiết lý do chọn điểm |
 | :--- | :---: | :--- |
-| **1. Multi-step Reasoning** | 3 / 5 | Các yêu cầu cơ bản là một bước tra cứu hoặc đặt lịch; trường hợp tra cứu cố vấn rồi đặt lịch tạo chuỗi 2 bước, nhưng chưa cần lập kế hoạch dài. |
+| **1. Multi-step Reasoning** | 4 / 5 | TC04 yêu cầu Agent phân rã mục tiêu thành chuỗi `academic_query` để lấy cố vấn rồi `schedule_appointment`; ngoài ra vẫn có các yêu cầu đơn bước. |
 | **2. Tool Interaction** | 5 / 5 | Agent phải gọi MCP Server để tra hồ sơ học vụ và thực hiện thao tác đặt lịch, thay vì chỉ trả lời từ kiến thức có sẵn. |
-| **3. Dynamic Decision** | 4 / 5 | Kết quả `academic_query` (cố vấn, trạng thái sinh viên) quyết định có thể đặt lịch và dùng tham số nào ở bước tiếp theo. |
-| **4. Long Horizon Goal** | 2 / 5 | Mục tiêu thường hoàn tất trong một đến hai lượt gọi tool; không yêu cầu theo dõi quy trình dài ngày. |
-| **TỔNG ĐIỂM AGENTIC FIT** | **14 / 20** | Tổng điểm vượt 12/20, phù hợp triển khai ReAct Agent ở quy mô nhỏ và dễ kiểm thử. |
+| **3. Dynamic Decision** | 5 / 5 | Agent phải đọc Observation, lấy đúng `advisor` từ hồ sơ sinh viên và dùng giá trị đó làm tham số cho bước đặt lịch; mã không hợp lệ cũng làm thay đổi nhánh trả lời sang `NOT_FOUND`. |
+| **4. Long Horizon Goal** | 3 / 5 | Một số mục tiêu kéo dài qua hai lượt gọi tool và cần duy trì ngữ cảnh; tuy nhiên chưa có quy trình dài hạn, bộ nhớ bền vững hoặc theo dõi nhiều phiên. |
+| **TỔNG ĐIỂM AGENTIC FIT** | **17 / 20** | Tổng điểm cao, phù hợp triển khai ReAct Agent vì có tool interaction, quyết định động và chuỗi xử lý nhiều bước rõ ràng. |
 
 ---
 
